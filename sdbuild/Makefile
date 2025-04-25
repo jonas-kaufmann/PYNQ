@@ -35,6 +35,8 @@ KERNEL_aarch64 := Image
 BOOT_arm := u-boot.elf zynq_fsbl.elf
 BOOT_aarch64 := u-boot.elf zynqmp_fsbl.elf pmufw.elf bl31.elf
 
+BOOT_REGSINIT := $(CURDIR)/regs.init
+
 export CCACHEDIR
 export ROOTDIR
 export BUILD_ROOT
@@ -179,7 +181,7 @@ $$(PL_PROJ_$1): $$(BSP_TARGET_$1)
 	petalinux-config --silentconfig -p $$(PL_PROJ_$1)
 
 $$(BOOT_ROOT_$1)/BOOT.BIN : $$(BOOT_DEPENDS_$1) $$(BOOT_BITSTREAM_$1) | $$(BOOT_ROOT_$1)
-	cd $$(BOOT_ROOT_$1) && petalinux-package --boot --fpga $$(BITSTREAM_ABS_$1) --u-boot -p $$(PL_PROJ_$1) --force
+	cd $$(BOOT_ROOT_$1) && petalinux-package --boot --fpga $$(BITSTREAM_ABS_$1) --u-boot --bif-attribute init --bif-attribute-value $(BOOT_REGSINIT) -p $$(PL_PROJ_$1) --force
 	cp -f $$(PL_PROJ_$1)/images/linux/BOOT.BIN $$(BOOT_ROOT_$1)
 
 $$(BOOT_ROOT_$1)/image.ub : $$(BUILD_ROOT_$1)/image.its $$(BUILD_ROOT_$1)/system.dtb $$(BUILD_ROOT_$1)/$$(KERNEL_$$(ARCH_$1)) | $$(BOOT_ROOT_$1)
